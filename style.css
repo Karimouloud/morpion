@@ -1,0 +1,62 @@
+html{
+    font-family: 'Permanent Marker', cursive;
+    color: rgb(93, 29, 243);
+    font-size: 3em;
+}
+
+* {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.box{
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+}
+
+.control{
+    
+    width: 50vw;
+    padding: 50px;
+    position: fixed;
+    min-height: 30vh;
+    text-align: center;
+    background: rgb(255, 255, 255);
+    box-shadow: 1px 3px 20px 4px rgb(0, 0, 169, 0.5);
+}
+
+.play{
+    width: 100%;
+    outline: none;
+    color: #E8EAF6;
+    background: #3F51B5;    
+    border: solid #303F9F 30px;
+    border-bottom-color: #1A237E;
+    border-right-color: #1A237E;
+    border-width: 25px 30px 30px 25px;
+    box-shadow: 1px 3px 20px 4px rgb(0, 0, 169, 0.5);
+}
+
+.control__play:active{
+    transform: perspective(100px) translateZ(-5px);
+    box-shadow: 1px 3px 10px 1px rgb(0, 0, 169, 0.8);
+
+}
+
+.grid{
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    background: #E8EAF6;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid > *{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 5px rgb(103, 47, 167);
+}
