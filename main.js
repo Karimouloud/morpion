@@ -1,8 +1,7 @@
-//https://courses.hardcode.rs/?coupon=L8P5E5Q
 const me = 'O'
 const bot = 'X'
-let player = bot
-let turn = 0
+//let player = bot
+//let turn = 0
 
 const board = Array.from(Array(9).keys())
 
@@ -10,6 +9,7 @@ const cells = Array.from(document.querySelectorAll('.grid>*'))
 
 const control = document.querySelector('.control')
 const play = document.querySelector('.play')
+const info = document.querySelector('.info')
 
 const winList = [
     [0,1,2],
@@ -37,6 +37,7 @@ const endGame = (isWin) => {
         replay()
     })
     cells.map(cell => cell.removeEventListener('click', newTurn))
+    gameResult(isWin.player === me ? 'Gagné !' : 'Perdu..')
 }
 
 const checkWin = (board, player) => {
@@ -60,12 +61,96 @@ const handleturn = (cell, player) => {
     if (isWin) endGame(isWin)
 }
 
-const newTurn = (event) => {
-    player = player === me ? bot : me
-    handleturn(event.target, player)
+const minimax = (boardCopie, player) => {
+    const placeDispo = placesDisponibles(boardCopie)
 
-    turn++
-    if (turn === 9) replay()
+    if (checkWin(boardCopie, me)) {
+        return {score: -10}
+    } else if (checkWin(boardCopie, bot)) {
+        return {score: 10}
+    } else if (placeDispo.length === 0) {
+        return {score: 0}
+    }
+
+    const coups = []
+
+    placeDispo.map((place, i) => {
+        const coup = {}
+        
+        coup.index = boardCopie[place]
+
+        boardCopie[place] = player
+
+        if (player === bot) {
+            const result = minimax(boardCopie, me)
+            coup.score = result.score
+        } else {
+            const result = minimax(boardCopie, bot)
+            coup.score = result.score
+        }
+
+        boardCopie[place] = coup.index
+
+        coups.push(coup)
+    })
+
+    let meilleurCoup
+
+    if (player === bot) {
+        let bestScore = -11
+        coups.map((coup, i) => {
+            if (coup.score > bestScore) {
+                bestScore = coup.score
+                meilleurCoup = i
+            }
+        })
+    } else {
+        let bestScore = 11
+        coups.map((coup, i) => {
+            if (coup.score < bestScore) {
+                bestScore = coup.score
+                meilleurCoup = i
+            }
+        })
+    }
+
+    return coups[meilleurCoup]
+}
+
+const placesDisponibles = () => board.filter(cell => typeof cell === 'number')
+
+const bestPlace = () => {
+    //const random = Math.floor(Math.random() * placesDispo().length)
+    //return cells[placesDispo()[random]]
+    return cells[minimax(board, bot).index]
+}
+
+const gameResult = (result) => {
+    control.style.display='block'
+    play.style.display ='none'
+    info.innerText = result
+    replay()
+}
+
+const checkNul = () => {
+    if (placesDisponibles().length === 0) {
+        cells.map(cell => {
+            cell.removeEventListener('click', newTurn)
+        })
+        gameResult('Nul')
+        return true
+    }
+    return false
+}
+
+const newTurn = (event) => {
+    //player = player === me ? bot : me
+    handleturn(event.target, me)
+    if(!checkNul()) handleturn(bestPlace(), bot)
+    
+
+    //turn++
+    //if (turn === 9) replay()
 }
 
 const start = () => { 
